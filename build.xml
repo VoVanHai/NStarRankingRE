@@ -1,5 +1,5 @@
-<project name="RapidMiner Extension Template" default="install">
-	<description>Build file for the RapidMiner Template extension</description>
+<project name="NStarRankingRE" default="install">
+	<description>Build NStar ranking plugin for the RapidMiner extension</description>
 	
 	<presetdef name="javac">
 	    <javac includeantruntime="false" />
@@ -15,10 +15,10 @@
 	
 	<property name="javadoc.targetDir" location="javadoc" />
 
-	<property name="extension.name" value="Template" />
-	<property name="extension.name.long" value="RapidMiner Template Extension" />
-	<property name="extension.namespace" value="template" />
-    <property name="extension.vendor" value="" />
+	<property name="extension.name" value="NStarRankingRE" />
+	<property name="extension.name.long" value="NStarRankingRE" />
+	<property name="extension.namespace" value="NStarRankingRE" />
+    <property name="extension.vendor" value="VuLA-HaiVH-HaiVV-KissA" />
     <property name="extension.admin" value="" />
     <property name="extension.url" value="" />
 

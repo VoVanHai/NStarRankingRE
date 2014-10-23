@@ -10,6 +10,7 @@ import java.util.Iterator;
  * Time: 7:50:15 PM
  * To change this template use File | Settings | File Templates.
  */
+@SuppressWarnings("all")
 public class WeightedPageRankSketch {
 
     /**
@@ -18,6 +19,7 @@ public class WeightedPageRankSketch {
      * The parameterized identifier type I allows different types of identifiers
      * (strings, numbers, etc.) to be used.
      */
+	
     public interface NameMe<N, I> {
         N node(I identifier);
 

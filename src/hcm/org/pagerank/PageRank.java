@@ -58,7 +58,7 @@ public class PageRank<I> {
     public RankedVector<I> getRanking() {
         return rankedVector;
     }
-
+    @SuppressWarnings("all")
     private class PageRankVector<I> implements RankedVector<I> {
         private final LinkedHashMap<I, WeightedNode<I>> sortedEntryList;
 
@@ -86,7 +86,7 @@ public class PageRank<I> {
             return sortedEntryList.values();
         }
     }
-
+    @SuppressWarnings("all")
     private class PageRankNode<I> implements WeightedNode<I>, Comparable<WeightedNode<I>> {
         private final I node;
         private final double weight;

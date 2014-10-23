@@ -1,14 +1,13 @@
 package hcm.org;
 
-import hcm.org.nstar.model.Keyword;
-import hcm.org.nstar.model.Publication;
+import hcm.utils.Tuple;
 
-import java.util.HashMap;
 import java.util.Iterator;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
+import org.jgrapht.traverse.BreadthFirstIterator;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Attributes;
@@ -17,7 +16,7 @@ import com.rapidminer.example.ExampleSet;
 
 public class GenGraph {
 	private Graph<Object, DefaultEdge> graph=null;
-	private HashMap<String, Publication> listPubication;
+	//private HashMap<String, Publication> listPubication;
 	/*private HashMap<String, Publication> listKeyword;
 	private HashMap<String, Publication> listKeyword;*/
 
@@ -26,14 +25,19 @@ public class GenGraph {
 	}
 
 	public GenGraph() {
-		if(listPubication!=null)
-			listPubication=new HashMap<String, Publication>();
+		/*if(listPubication!=null)
+			listPubication=new HashMap<String, Publication>();*/
 		if(graph==null)
 			graph=new DirectedWeightedMultigraph<Object, DefaultEdge>(DefaultEdge.class);
+		System.out.println("****create graph*****");
 	}
-
-	public void genGraph(ExampleSet exampleSet,String type) {
-		Iterator<Example> itor = exampleSet.iterator();
+	/**
+	 * 
+	 * @param exampleSet
+	 * @param type
+	 */
+	public void genGraph_old(ExampleSet exampleSet,String type) {
+		/*Iterator<Example> itor = exampleSet.iterator();
 		if(type.equalsIgnoreCase("publication")){
 			while(itor.hasNext()){
 				Example ex=itor.next();
@@ -58,11 +62,11 @@ public class GenGraph {
 				Iterator<Attribute> it = atts.iterator();
 				Attribute attIdPaper=it.next();
 				Attribute attIdKeyword=it.next();
-				
+
 				//tao dinh state gan giua pub va keyw
 				Object state=new State(attIdPaper,attIdKeyword);
 				graph.addVertex(state);
-				
+
 				Object sourceVertex=findVertex(attIdPaper);
 				Object targetVertex=findVertex(attIdKeyword);
 				graph.addEdge(sourceVertex, targetVertex);
@@ -82,14 +86,10 @@ public class GenGraph {
 				graph.addEdge(sourceVertex, targetVertex);
 				//edge.setValue=State
 			}
-		}
+		}*/
 	}
 
-
-	private Object findVertex(Attribute attIdPaper) {
-		return null;
-	}
-
+	/*
 	private Keyword createKeyword(Attributes atts) {
 		return null;
 	}
@@ -105,6 +105,75 @@ public class GenGraph {
 		}
 
 		return pub;
+	}*/
+
+	/**
+	 * generate graph from an ExampleSet
+	 * @param exampleSet
+	 * @param type: "vertex" of graph OR "edge" of graph
+	 */
+	public void genGraph(ExampleSet exampleSet, String type) {
+		Iterator<Example> itor = exampleSet.iterator();
+		if(type.equalsIgnoreCase("vertex")){
+			while(itor.hasNext()){
+				Example ex=itor.next();
+				Attributes atts = ex.getAttributes();
+				//we can get id by using: Attribute id = atts.getId();
+				
+				Attribute attID=atts.getId();
+				String key=ex.getValueAsString(attID);
+				//HashMap<String, Attributes>vertex=new HashMap<String, Attributes>();
+				Tuple<String, Attribute>vertex=new Tuple<String, Attribute>(key, attID);
+				graph.addVertex(vertex);
+				/*//debug purpose
+				 if(atts!=null){
+					Attribute att=atts.getId();
+					if(att!=null){
+						String val=ex.getValueAsString(att);
+						String line=(att.getName()+"="+val)+";";
+						System.out.println("--add vertex "+":\t"+line);
+					}
+				}*/
+			}
+		}
+		else if(type.equalsIgnoreCase("edge")){
+			while(itor.hasNext()){
+				Example ex=itor.next();
+				Attributes atts = ex.getAttributes();
+				
+				Iterator<Attribute> it = atts.iterator();
+				//get ids in columns (relation in this situation must be 2 columns)
+				Attribute attSource=it.next();
+				Attribute attDest=it.next();
+				String valSource=ex.getValueAsString(attSource);
+				String valDest=ex.getValueAsString(attDest);
+				
+				Object sourceVertex=findVertex(valSource);
+				Object targetVertex=findVertex(valDest);
+				if(sourceVertex!=null && targetVertex!=null){
+					graph.addEdge(sourceVertex, targetVertex);
+					System.out.println("--add edge from "+valSource+" to "+valDest);
+				}
+			}
+		}
+	}
+	/**
+	 * find a vertex in graph
+	 * @param keyValue is the key node
+	 * @return a founded vertex in graph
+	 */
+	@SuppressWarnings("unchecked")
+	private Object findVertex(String keyValue) {
+		BreadthFirstIterator<Object, DefaultEdge>itor=new BreadthFirstIterator<Object, DefaultEdge>(graph);
+		//DepthFirstIterator<Object, DefaultEdge>itor=new DepthFirstIterator<Object, DefaultEdge>(graph);
+		while(itor.hasNext()){
+			Object obj = itor.next();
+			Tuple<String, Attribute>vertex=(Tuple<String, Attribute>)obj;
+			
+			if(vertex.getKey().equalsIgnoreCase(keyValue))
+				return vertex;
+		}
+		return null;
 	}
 
 }

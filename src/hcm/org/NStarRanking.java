@@ -1,6 +1,7 @@
 package hcm.org;
 
 
+import hcm.org.demo.PrintGraph;
 import hcm.org.nstar.model.NStarRank;
 
 import org.jgrapht.Graph;
@@ -12,50 +13,54 @@ import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
-import com.rapidminer.operator.ports.metadata.MetaData;
-import com.rapidminer.operator.ports.metadata.SimplePrecondition;
 
 public class NStarRanking extends Operator{
 
-	private InputPort exampleSetInput1 =getInputPorts()
-			.createPort("example input set 1",ExampleSet.class); 
-	private InputPort exampleSetInput2 =getInputPorts()
-			.createPort("example input set 2",ExampleSet.class);
-	private InputPort exampleSetInput3 =getInputPorts()
-			.createPort("example input set 3",ExampleSet.class);
-	private InputPort exampleSetInput4 =getInputPorts()
-			.createPort("example input set 4",ExampleSet.class);
+	private InputPort exampleSetInput1 =getInputPorts().createPort("example input set 1",ExampleSet.class); 
+	private InputPort exampleSetInput2 =getInputPorts().createPort("example input set 2",ExampleSet.class);
+	private InputPort exampleSetInput3 =getInputPorts().createPort("example input set 3",ExampleSet.class);
+	private InputPort exampleSetInput4 =getInputPorts().createPort("example input set 4",ExampleSet.class);
 	
 	private OutputPort exampleSetOutput1 =getOutputPorts().createPort("example output set 1");
 	private OutputPort exampleSetOutput2 =getOutputPorts().createPort("example output set 2");
 
 	public NStarRanking(OperatorDescription description) {
 		super(description);
-		exampleSetInput1.addPrecondition(
+		/*exampleSetInput1.addPrecondition(
 				new SimplePrecondition(exampleSetInput1, 
-						new MetaData(ExampleSet.class)));
+						new MetaData(ExampleSet.class)));*/
 	}
 
 	@Override
 	public void doWork() throws OperatorException {
-		//1. lay du lieu dau vao
+		//1. get input data
 		ExampleSet exampleSet1=exampleSetInput1.getData(ExampleSet.class);
-		System.out.println("-----finish ex01");
 		ExampleSet exampleSet2=exampleSetInput2.getData(ExampleSet.class);
-		System.out.println("-----finish ex02");
 		ExampleSet exampleSet3=exampleSetInput3.getData(ExampleSet.class);
-		System.out.println("-----finish ex02");
 		ExampleSet exampleSet4=exampleSetInput4.getData(ExampleSet.class);
-		System.out.println("-----finish ex04");
+
 		
-		//2. dua du lieu vao graph
+		//2. generate graph from input data
 		GenGraph x=new GenGraph();
-		//publication
-		x.genGraph(exampleSet1,"publication"); 
+		/*x.genGraph(exampleSet1,"publication"); 
 		x.genGraph(exampleSet2,"keywords"); 
 		x.genGraph(exampleSet3,"keywords_publication"); 
-		x.genGraph(exampleSet4,"publication_publication"); 
+		x.genGraph(exampleSet4,"publication_publication");*/
+		
+		//problem: how to known what is vertex/edge from input exampleSet in RM
+		x.genGraph(exampleSet1,"vertex"); 
+		x.genGraph(exampleSet2,"vertex"); 
+
+		x.genGraph(exampleSet3,"edge"); 
+		x.genGraph(exampleSet4,"edge");
+		
 		Graph<Object, DefaultEdge> graph=x.getGraph();
+		
+		//debug purpose
+		System.out.println("--------------------------------------");
+		PrintGraph.printGrah(graph);
+		System.out.println("--------------------------------------");
+		
 		
 		//3. Chay thuat toan NStar
 		ExampleSet []results=new NStarRank().evalByAlgorithm(graph);
@@ -69,10 +74,6 @@ public class NStarRanking extends Operator{
 		exampleSetOutput2.deliver(results[1]);   
 	}
 
-
-	private ExampleSet genarateResult(Object result) {
-		return null;
-	}
 }
 /*Attributes attibutes = exampleSet.getAttributes();
 Attribute sourceAttribute=attibutes.get("relative time");
