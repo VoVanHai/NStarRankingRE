@@ -7,6 +7,16 @@
             <class>hcm.org.NStarRanking</class>
             <replaces>NStarRanking</replaces>
          </operator>
+         <operator>
+            <key>NStarParametperPort</key>
+            <class>many.proces.port.NStarParametperPort</class>
+            <replaces>NStarParametperPort</replaces>
+         </operator>
+         <operator>
+            <key>NStarPreProcessing</key>
+            <class>many.proces.port.NStarPreProcessing</class>
+            <replaces>NStarPreProcessing</replaces>
+         </operator>
       </group>
    </group>
 </operators>

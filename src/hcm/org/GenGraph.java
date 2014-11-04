@@ -1,8 +1,10 @@
 package hcm.org;
 
-import hcm.utils.Tuple;
-
 import java.util.Iterator;
+
+
+
+import my.graph.TypedVerTex;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
@@ -110,21 +112,28 @@ public class GenGraph {
 	/**
 	 * generate graph from an ExampleSet
 	 * @param exampleSet
+	 * @param toType 
+	 * @param fromType 
 	 * @param type: "vertex" of graph OR "edge" of graph
 	 */
-	public void genGraph(ExampleSet exampleSet, String type) {
+	public void genGraph(ExampleSet exampleSet, String graphType, String fromType, String toType) {
 		Iterator<Example> itor = exampleSet.iterator();
-		if(type.equalsIgnoreCase("vertex")){
+		
+		if(graphType.equalsIgnoreCase("vertex")){
 			while(itor.hasNext()){
 				Example ex=itor.next();
 				Attributes atts = ex.getAttributes();
 				//we can get id by using: Attribute id = atts.getId();
 				
-				Attribute attID=atts.getId();
+				TypedVerTex tv=new TypedVerTex(fromType,ex);
+				
+				graph.addVertex(tv);
+				
+				/*Attribute attID=atts.getId();
 				String key=ex.getValueAsString(attID);
 				//HashMap<String, Attributes>vertex=new HashMap<String, Attributes>();
 				Tuple<String, Attribute>vertex=new Tuple<String, Attribute>(key, attID);
-				graph.addVertex(vertex);
+				graph.addVertex(vertex);*/
 				/*//debug purpose
 				 if(atts!=null){
 					Attribute att=atts.getId();
@@ -136,20 +145,24 @@ public class GenGraph {
 				}*/
 			}
 		}
-		else if(type.equalsIgnoreCase("edge")){
+		else if(graphType.equalsIgnoreCase("edge")){
 			while(itor.hasNext()){
 				Example ex=itor.next();
 				Attributes atts = ex.getAttributes();
 				
 				Iterator<Attribute> it = atts.iterator();
 				//get ids in columns (relation in this situation must be 2 columns)
+				
 				Attribute attSource=it.next();
 				Attribute attDest=it.next();
+				
 				String valSource=ex.getValueAsString(attSource);
 				String valDest=ex.getValueAsString(attDest);
 				
-				Object sourceVertex=findVertex(valSource);
-				Object targetVertex=findVertex(valDest);
+				//noi 2 loai
+				Object sourceVertex=findVertex(valSource,"papers");
+				Object targetVertex=findVertex(valDest,"keywords");
+				
 				if(sourceVertex!=null && targetVertex!=null){
 					graph.addEdge(sourceVertex, targetVertex);
 					System.out.println("--add edge from "+valSource+" to "+valDest);
@@ -163,17 +176,30 @@ public class GenGraph {
 	 * @return a founded vertex in graph
 	 */
 	@SuppressWarnings("unchecked")
-	private Object findVertex(String keyValue) {
+	private Object findVertex(String keyValue,String vertexType) {
 		BreadthFirstIterator<Object, DefaultEdge>itor=new BreadthFirstIterator<Object, DefaultEdge>(graph);
 		//DepthFirstIterator<Object, DefaultEdge>itor=new DepthFirstIterator<Object, DefaultEdge>(graph);
-		while(itor.hasNext()){
+		/*while(itor.hasNext()){
 			Object obj = itor.next();
 			Tuple<String, Attribute>vertex=(Tuple<String, Attribute>)obj;
 			
 			if(vertex.getKey().equalsIgnoreCase(keyValue))
 				return vertex;
+		}*/
+		while(itor.hasNext()){
+			Object obj = itor.next();
+			TypedVerTex vertex=(TypedVerTex)obj;
+			
+			if(vertex.getId().equalsIgnoreCase(keyValue)
+					&& vertex.getType().equalsIgnoreCase(vertexType))
+				return vertex;
 		}
 		return null;
+	}
+
+	public void genGraph(ExampleSet exampleSet2, String string,
+			String vertexType2) {
+		
 	}
 
 }

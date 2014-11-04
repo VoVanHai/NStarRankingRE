@@ -13,6 +13,7 @@ import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
+import com.rapidminer.operator.ports.PortPairExtender;
 
 public class NStarRanking extends Operator{
 
@@ -20,15 +21,30 @@ public class NStarRanking extends Operator{
 	private InputPort exampleSetInput2 =getInputPorts().createPort("example input set 2",ExampleSet.class);
 	private InputPort exampleSetInput3 =getInputPorts().createPort("example input set 3",ExampleSet.class);
 	private InputPort exampleSetInput4 =getInputPorts().createPort("example input set 4",ExampleSet.class);
+
+
 	
 	private OutputPort exampleSetOutput1 =getOutputPorts().createPort("example output set 1");
 	private OutputPort exampleSetOutput2 =getOutputPorts().createPort("example output set 2");
 
+	
+	private InputPort []exampleSetInputs=new InputPort[4];/*{
+			getInputPorts().createPort("example input set 11",ExampleSet.class),
+			getInputPorts().createPort("example input set 12",ExampleSet.class),
+			getInputPorts().createPort("example input set 13",ExampleSet.class),
+			getInputPorts().createPort("example input set 14",ExampleSet.class)
+	};*/
+	
+		
+	
 	public NStarRanking(OperatorDescription description) {
 		super(description);
 		/*exampleSetInput1.addPrecondition(
 				new SimplePrecondition(exampleSetInput1, 
 						new MetaData(ExampleSet.class)));*/
+		for (int j = 0; j < 5; j++) {
+			getInputPorts().createPort("name "+j);
+		}
 	}
 
 	@Override
@@ -38,7 +54,7 @@ public class NStarRanking extends Operator{
 		ExampleSet exampleSet2=exampleSetInput2.getData(ExampleSet.class);
 		ExampleSet exampleSet3=exampleSetInput3.getData(ExampleSet.class);
 		ExampleSet exampleSet4=exampleSetInput4.getData(ExampleSet.class);
-
+		
 		
 		//2. generate graph from input data
 		GenGraph x=new GenGraph();
@@ -48,17 +64,27 @@ public class NStarRanking extends Operator{
 		x.genGraph(exampleSet4,"publication_publication");*/
 		
 		//problem: how to known what is vertex/edge from input exampleSet in RM
-		x.genGraph(exampleSet1,"vertex"); 
-		x.genGraph(exampleSet2,"vertex"); 
+		
+		String vertexType1=exampleSet1.getSource().replace("Retrieve ", "");//Retrieve Papers
+		String vertexType2=exampleSet1.getSource().replace("Retrieve ", "");//Retrieve Papers
+		String vertexType3=exampleSet1.getSource().replace("Retrieve ", "");//Retrieve Papers
+		String vertexType4=exampleSet1.getSource().replace("Retrieve ", "");//Retrieve Papers
+		
+		x.genGraph(exampleSet1,"vertex",vertexType1); 
+		x.genGraph(exampleSet2,"vertex",vertexType2); 
 
-		x.genGraph(exampleSet3,"edge"); 
-		x.genGraph(exampleSet4,"edge");
+		x.genGraph(exampleSet3,"edge","from type???????????","to type"); 
+		x.genGraph(exampleSet4,"edge","from type","to type");
+		
+		//so egde tuy thuoc vao file tham so ban dau
+		//x.genGraph(exampleSet4,"edge","from type","to type");
+		//x.genGraph(exampleSet4,"edge","from type","to type");
 		
 		Graph<Object, DefaultEdge> graph=x.getGraph();
 		
 		//debug purpose
 		System.out.println("--------------------------------------");
-		PrintGraph.printGrah(graph);
+		PrintGraph.printObjectGraph(graph);
 		System.out.println("--------------------------------------");
 		
 		
